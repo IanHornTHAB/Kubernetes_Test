@@ -1,18 +1,29 @@
-name: Docker Image CI
+# .github/workflows/docker-build-push.yml
+name: Build and Push Docker image
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ d20093d0-6cc0-4206-9aab-59d3e20af024 }}
+
+    - name: Build and push Docker image
+      uses: azure/docker-login@v1
+      with:
+        login-server: containerregistrykubernetes.azurecr.io
+        username: ${{ secrets.AZURE_USERNAME }}
+        password: ${{ secrets.AZURE_PASSWORD }}
+
+    - run: |
+        docker build -t containerregistrykubernetes.azurecr.io/githubhttptrigger1:latest .
+        docker push containerregistrykubernetes.azurecr.io/githubhttptrigger1:latest
