@@ -6,8 +6,8 @@ app.http('githubHTTPTrigger1', {
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);
 
-        const name = request.query.get('name') || await request.text() || 'world';
+        const name = request.query.get('name') || await request.text() || 'Julius';
 
-        return { body: `Helloooooo, ${name}!` };
+        return { body: `Guten Tag , ${name}! es funktioniert:)` };
     }
 });
