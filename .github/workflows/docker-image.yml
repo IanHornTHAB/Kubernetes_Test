@@ -15,7 +15,7 @@ jobs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ d20093d0-6cc0-4206-9aab-59d3e20af024 }}
+        creds: ${{ AZURE_CREDENTIALS }}
 
     - name: Build and push Docker image
       uses: azure/docker-login@v1
