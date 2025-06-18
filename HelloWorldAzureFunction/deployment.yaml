@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+  namespace: default
+  labels:
+    app: helloworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld-container
+        image: containerregistrykubernetes.azurecr.io/helloworldkubernetes:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: AzureWebJobsStorage
+          value: "set in environment"
+        resources:
+          requests:
+            memory: "256Mi"   # Erhöht den Memory-Request
+            cpu: "500m"       # Erhöht die CPU-Request
+          limits:
+            memory: "512Mi"   # Erhöht das Memory-Limit
+            cpu: "1"          # Erhöht das CPU-Limit
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-deployment #vorher helloworld-service
+  namespace: default
+  labels:
+    app: helloworld
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: helloworld
