@@ -1,0 +1,40 @@
+name: Build and Push Docker image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Docker Login to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: containerregistrykubernetes.azurecr.io
+        username: ${{ secrets.AZURE_USERNAME }}
+        password: ${{ secrets.AZURE_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t containerregistrykubernetes.azurecr.io/githubhttptrigger1:latest -f NodejsFunktionGithubRepo/Dockerfile NodejsFunktionGithubRepo
+        docker push containerregistrykubernetes.azurecr.io/githubhttptrigger1:latest
+
+    - name: Set AKS context
+      uses: azure/aks-set-context@v3
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        cluster-name: kubernetescluster
+        resource-group: KubernetesTest
+
+    - name: Restart Kubernetes Deployment
+      run: |
+        kubectl rollout restart deployment githubhttptrigger1
