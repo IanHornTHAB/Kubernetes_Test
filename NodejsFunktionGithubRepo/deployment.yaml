@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: githubhttptrigger1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: githubhttptrigger1
+  template:
+    metadata:
+      labels:
+        app: githubhttptrigger1
+    spec:
+      containers:
+      - name: myfunction
+        image: containerregistrykubernetes.azurecr.io/githubhttptrigger1:latest
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: githubhttptrigger1-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: githubhttptrigger1
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
